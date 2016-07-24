@@ -1,7 +1,5 @@
 package org.ka.arkady
 
-import org.ka.arkady.aggregator.Aggregator
-import org.ka.arkady.test.Food
 import org.ka.arkady.tree.TreeFilteringAggregator
 import spock.lang.Specification
 
@@ -14,62 +12,31 @@ class FilterTreeBuilderTest extends Specification {
     TreeFilteringAggregator<Food> testTree() {
         def builder = new TreeFilteringAggregatorBuilder<Food>()
 
-        def potatoFilter = builder.newFilter {
-            if (!(it.country in ['BG', 'PL', 'DE'])) {
-                fails
-            } else {
-                filter {
-                    switch (it.manufacturer) {
-                        case 'man1':
-                            aggregator(name: 'potatoMan1Agg')
-                            break
-                        case 'man2':
-                            aggregator(name: 'potatoMan2Agg')
-                            break
-                        default:
-                            fails
-                    }
-                }
-            }
+        def potatoAggregator = builder.newFilter {
+            when { !(it.country in ['BG', 'PL', 'DE']) } aggergator fails
+            when { it.manufacturer == 'man1' } newAggregator(name: 'potatoMan1Agg')
+            when { it.manufacturer == 'man2' } newAggregator(name: 'potatoMan2Agg')
         }
 
         builder.newTree {
-            if (now.toMillis() - it.expireDate > TimeUnit.DAYS.toMillis(5)) {
-                fails
-            } else {
-                switch (it.foodClass) {
-                    case 'vegetables':
-                        filter {
-                            if (it.foodType == 'carrot') {
-                                filter {
-                                    aggregator(name: 'carrotAgg')
-                                }
-                            } else if (it.foodType == 'potato') {
-                                filter potatoFilter
-                            } else {
-                                fails
-                            }
+            when { now() - it.expireDate > TimeUnit.DAYS.toMillis(5) } then {
+                match { it.foodClass } {
+                    when 'vegetables' then {
+                        match { it.foodType } {
+                            when 'carrot' newAggregator(name: 'carrotAgg')
+                            when 'potato' aggergator potatoAggregator
                         }
-                        break
-                    case 'fruits':
-                        filter {
-                            if (it.foodType == 'apple') {
-                                if (it.name in ['Red Apple', 'Green Apple']) {
-                                    aggregator(name: 'goodFruitsAgg')
-                                } else {
-                                    fails
-                                }
-                            } else if (it.foodType == 'orange') {
-                                aggregator(name: 'goodFruitsAgg')
-                            } else if (it.foodType == 'grapes') {
-                                aggregator(name: 'grapesAgg')
-                            } else {
-                                fails
+                    }
+                    when 'fruits' then {
+                        match { it.foodType } {
+                            when('apple') then {
+                                when { it.name in ['Red Apple', 'Green Apple'] } newAggregator(name: 'goodFruitsAgg')
                             }
+                            when('orange') aggregatorByName('goodFruitsAgg')
+                            when('grapes') newAggregator(name: 'grapesAgg')
                         }
-                        break
-                    default:
-                        fails
+
+                    }
                 }
             }
         }
@@ -120,8 +87,9 @@ class FilterTreeBuilderTest extends Specification {
         when:
         food.each tree.&aggregate
         then:
-        aggregators.find {it.name == 'goodFruitsAgg'}.objects.size() == 2
-        aggregators.find {it.name == 'potatoMan1Agg'}.objects.size() == 1
-        aggregators.find {it.name == 'fails'}.objects.size() == 1
+        aggregators.find { it.name == 'goodFruitsAgg' }.objects.size() == 2
+        aggregators.find { it.name == 'potatoMan1Agg' }.objects.size() == 1
+        aggregators.find { it.name == 'fails' }.objects.size() == 1
     }
+
 }

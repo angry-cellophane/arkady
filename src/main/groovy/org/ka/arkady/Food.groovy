@@ -1,4 +1,4 @@
-package org.ka.arkady.test
+package org.ka.arkady
 
 class Food {
     String foodClass

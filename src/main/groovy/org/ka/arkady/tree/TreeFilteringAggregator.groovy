@@ -1,7 +1,7 @@
 package org.ka.arkady.tree
 
 import groovy.transform.CompileStatic
-import org.ka.arkady.aggregator.Aggregator
+import org.ka.arkady.aggregator.FinalAggregator
 
 @CompileStatic
 class TreeFilteringAggregator<T> {
@@ -10,7 +10,7 @@ class TreeFilteringAggregator<T> {
 
     }
 
-    List<Aggregator<T>> getAggregators() {
+    List<FinalAggregator<T>> getAggregators() {
         []
     }
 
