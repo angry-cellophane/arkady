@@ -14,6 +14,6 @@ class FilteringAggregator implements Aggregator {
 
     @Override
     void aggregate(Food food) {
-        filter(object)
+        filter(food)
     }
 }

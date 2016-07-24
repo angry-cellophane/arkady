@@ -18,10 +18,10 @@ class TreeFilteringAggregatorBuilder<T> {
         new TreeFilteringAggregator<T>()
     }
 
-    FilteringAggregator<T> newFilter(@DelegatesTo(value = BaseSpec, strategy = Closure.DELEGATE_FIRST) Closure c) {
+    FilteringAggregator newFilter(@DelegatesTo(value = BaseSpec, strategy = Closure.DELEGATE_FIRST) Closure c) {
         c.setDelegate(spec)
         c.setResolveStrategy(Closure.DELEGATE_FIRST)
         c()
-        new FilteringAggregator<T>(c)
+        new FilteringAggregator(c)
     }
 }
