@@ -8,8 +8,8 @@ import java.util.concurrent.TimeUnit
 
 class FilterTreeBuilderTest extends Specification {
 
-    TreeFilteringAggregator<Food> testTree() {
-        def builder = new TreeFilteringAggregatorBuilder<Food>()
+    TreeFilteringAggregator testTree() {
+        def builder = new TreeFilteringAggregatorBuilder()
 
         def potatoAggregator = builder.newFilter {
             when { !(it.country in ['BG', 'PL', 'DE']) } aggregateBy fails
@@ -48,7 +48,7 @@ class FilterTreeBuilderTest extends Specification {
         when:
         def aggregators = tree.aggregators
         then:
-        aggregators.size() == 6
+        aggregators.size() == 7
     }
 
     def 'test fitlers'() {
