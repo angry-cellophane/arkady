@@ -12,29 +12,30 @@ class FilterTreeBuilderTest extends Specification {
         def builder = new TreeFilteringAggregatorBuilder<Food>()
 
         def potatoAggregator = builder.newFilter {
-            when { !(it.country in ['BG', 'PL', 'DE']) } aggregator fails
-            when { it.manufacturer == 'man1' } newAggregator(name: 'potatoMan1Agg')
-            when { it.manufacturer == 'man2' } newAggregator(name: 'potatoMan2Agg')
+            when { !(it.country in ['BG', 'PL', 'DE']) } aggregateBy fails
+            when { it.manufacturer == 'man1' } aggregateBy newAggregator(name: 'potatoMan1Agg')
+            when { it.manufacturer == 'man2' } aggregateBy newAggregator(name: 'potatoMan2Agg')
+            when all aggregateBy newAggregator(name: 'otherPotatoAgg')
         }
 
         builder.newTree {
-            when { now() - it.expireDate > TimeUnit.DAYS.toMillis(5) } then {
+            when { now() - it.expireDate < TimeUnit.DAYS.toMillis(5) } then {
                 match { it.foodClass } {
                     when 'vegetables' then {
                         match { it.foodType } {
-                            when 'carrot' newAggregator(name: 'carrotAgg')
-                            when 'potato' aggregator potatoAggregator
+                            when 'carrot' aggregateBy newAggregator(name: 'carrotAgg')
+                            when 'potato' aggregateBy potatoAggregator
+//                            by default all other food go to the fails aggregator
                         }
                     }
                     when 'fruits' then {
                         match { it.foodType } {
                             when('apple') then {
-                                when { it.name in ['Red Apple', 'Green Apple'] } newAggregator(name: 'goodFruitsAgg')
+                                when { it.name in ['Red Apple', 'Green Apple'] } aggregateBy newAggregator(name: 'goodFruitsAgg')
                             }
-                            when('orange') aggregatorByName('goodFruitsAgg')
-                            when('grapes') newAggregator(name: 'grapesAgg')
+                            when('orange') aggregateBy findByName('goodFruitsAgg')
+                            when('grapes') aggregateBy newAggregator(name: 'grapesAgg')
                         }
-
                     }
                 }
             }

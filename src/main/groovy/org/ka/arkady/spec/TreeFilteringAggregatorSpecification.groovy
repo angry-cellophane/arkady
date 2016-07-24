@@ -39,6 +39,11 @@ class TreeFilteringAggregatorSpecification implements BaseSpec, MatchBodySpec, A
     }
 
     @Override
+    AfterWhenSpec getAll() {
+        return null
+    }
+
+    @Override
     AfterWhenSpec when(Object assertion) {
         return null
     }
