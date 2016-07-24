@@ -14,8 +14,8 @@ class TreeFilteringAggregatorBuilder<T> {
 
     private final def spec = new TreeFilteringAggregatorSpecification()
 
-    TreeFilteringAggregator<T> newTree(@DelegatesTo(value = BaseSpec, strategy = Closure.DELEGATE_FIRST) Closure c) {
-        new TreeFilteringAggregator<T>()
+    TreeFilteringAggregator newTree(@DelegatesTo(value = BaseSpec, strategy = Closure.DELEGATE_FIRST) Closure c) {
+        new TreeFilteringAggregator()
     }
 
     FilteringAggregator newFilter(@DelegatesTo(value = BaseSpec, strategy = Closure.DELEGATE_FIRST) Closure c) {
