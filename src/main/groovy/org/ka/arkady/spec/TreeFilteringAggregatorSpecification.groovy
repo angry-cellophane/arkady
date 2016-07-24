@@ -16,12 +16,13 @@ class TreeFilteringAggregatorSpecification implements BaseSpec, MatchBodySpec, A
     final Case failsCase
     final Map<String, Aggregator> aggregatorByName
 
-    private Closure matchCondition
+    private final List<Closure> matchConditionsStack
 
     TreeFilteringAggregatorSpecification(Case failsCase, FilteringAggregator rootAgg, Map<String, Aggregator> aggregatorByName) {
         this.failsCase = failsCase
         this.stack = [rootAgg]
         this.aggregatorByName = aggregatorByName
+        this.matchConditionsStack = []
     }
 
     @Override
@@ -77,8 +78,8 @@ class TreeFilteringAggregatorSpecification implements BaseSpec, MatchBodySpec, A
 
     @Override
     AfterWhenSpec when(Object assertion) {
-        def c = matchCondition
-        stack.last().cases << new Case(condition: { c() == assertion })
+        def c = matchConditionsStack.last()
+        stack.last().cases << new Case(condition: { c(it) == assertion })
         return this
     }
 
@@ -88,9 +89,9 @@ class TreeFilteringAggregatorSpecification implements BaseSpec, MatchBodySpec, A
             @DelegatesTo(value = MatchBodySpec, strategy = Closure.DELEGATE_FIRST) Closure body) {
 
         def c = adjustDelegate(body)
-        matchCondition = condition.memoizeAtMost(1)
+        matchConditionsStack.push(condition.memoizeAtMost(1))
         c()
-        matchCondition = null
+        matchConditionsStack.pop()
 
         return this
     }
