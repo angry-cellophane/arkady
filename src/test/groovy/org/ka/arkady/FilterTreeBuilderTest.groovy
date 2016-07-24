@@ -72,7 +72,7 @@ class FilterTreeBuilderTest extends Specification {
                         foodClass: 'vegetables',
                         foodType: 'potato',
                         expireDate: System.currentTimeMillis(),
-                        country: 'FR',
+                        country: 'PL',
                         manufacturer: 'man1'),
                 new Food(name: 'Spoiled potato',
                         foodClass: 'vegetables',
