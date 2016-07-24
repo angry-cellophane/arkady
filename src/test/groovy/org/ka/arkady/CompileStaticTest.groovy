@@ -14,6 +14,7 @@ class CompileStaticTest {
                 new Food(foodType: 'fruits', name: 'apple'),
                 new Food(foodType: 'fruits', name: 'orange'),
                 new Food(foodType: 'fruits', name: 'grapes'),
+                new Food(foodType: 'fruits', name: 'pineapple'),
         ]
 
         def builder = new TreeFilteringAggregatorBuilder()
@@ -23,6 +24,7 @@ class CompileStaticTest {
                 when('fruits').then {
                     when { it.name == 'apple' } aggregateBy newAggregator([name: 'appleAgg'] as Map<String,Object>)
                     when { it.name == 'orange' } aggregateBy newAggregator([name: 'orangeAgg'] as Map<String,Object>)
+                    when { it.name == 'pineapple' } aggregateBy findByName('appleAgg')
                 }
             }
         }
@@ -33,7 +35,7 @@ class CompileStaticTest {
         }
 
         Assert.assertEquals(1, aggregators.find { it.name == 'vegetablesAgg' }.objects.size())
-        Assert.assertEquals(1, aggregators.find { it.name == 'appleAgg' }.objects.size())
+        Assert.assertEquals(2, aggregators.find { it.name == 'appleAgg' }.objects.size())
         Assert.assertEquals(1, aggregators.find { it.name == 'orangeAgg' }.objects.size())
         Assert.assertEquals(1, aggregators.find { it.name == 'fails' }.objects.size())
     }
