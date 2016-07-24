@@ -19,7 +19,7 @@ class FilterTreeBuilderTest extends Specification {
         }
 
         builder.newTree {
-            when { now() - it.expireDate < TimeUnit.DAYS.toMillis(5) } then {
+            when { System.currentTimeMillis() - it.expireDate < TimeUnit.DAYS.toMillis(5) } then {
                 match { it.foodClass } {
                     when 'vegetables' then {
                         match { it.foodType } {

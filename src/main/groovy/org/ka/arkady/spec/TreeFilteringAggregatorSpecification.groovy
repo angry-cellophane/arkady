@@ -14,12 +14,12 @@ class TreeFilteringAggregatorSpecification implements BaseSpec, MatchBodySpec, A
     }
 
     @Override
-    Aggregator aggregatorByName(String name) {
+    Aggregator findByName(String aggregatorName) {
         return null
     }
 
     @Override
-    Aggregator aggregator(Aggregator aggregator) {
+    Aggregator aggregateBy(Aggregator aggregator) {
         return null
     }
 
@@ -39,7 +39,7 @@ class TreeFilteringAggregatorSpecification implements BaseSpec, MatchBodySpec, A
     }
 
     @Override
-    AfterWhenSpec getAll() {
+    Closure<Boolean> getAll() {
         return null
     }
 
@@ -53,10 +53,5 @@ class TreeFilteringAggregatorSpecification implements BaseSpec, MatchBodySpec, A
             @ClosureParams(value = SimpleType, options = 'org.ka.arkady.Food') Closure condition,
             @DelegatesTo(value = MatchBodySpec, strategy = Closure.DELEGATE_FIRST) Closure body) {
         return null
-    }
-
-    @Override
-    long now() {
-        return System.currentTimeMillis()
     }
 }
