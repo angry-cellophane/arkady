@@ -8,7 +8,6 @@ import java.util.concurrent.TimeUnit
 
 class FilterTreeBuilderTest extends Specification {
 
-
     TreeFilteringAggregator<Food> testTree() {
         def builder = new TreeFilteringAggregatorBuilder<Food>()
 

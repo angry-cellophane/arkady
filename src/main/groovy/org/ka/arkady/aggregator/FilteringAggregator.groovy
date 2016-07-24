@@ -1,9 +1,10 @@
 package org.ka.arkady.aggregator
 
+import org.ka.arkady.Food
 import org.ka.arkady.spec.TreeFilteringAggregatorSpecification
 
 
-class FilteringAggregator<T> implements Aggregator<T> {
+class FilteringAggregator implements Aggregator {
 
     final Closure filter
 
@@ -12,7 +13,7 @@ class FilteringAggregator<T> implements Aggregator<T> {
     }
 
     @Override
-    void aggregate(T object) {
+    void aggregate(Food food) {
         filter(object)
     }
 }

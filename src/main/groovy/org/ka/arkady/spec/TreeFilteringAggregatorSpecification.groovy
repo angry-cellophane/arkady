@@ -9,11 +9,6 @@ import org.ka.arkady.aggregator.Aggregator
 class TreeFilteringAggregatorSpecification implements BaseSpec, MatchBodySpec, AfterWhenSpec {
 
     @Override
-    Aggregator aggergator(Map<String, Object> params) {
-        return null
-    }
-
-    @Override
     Aggregator newAggregator(Map<String, Object> params) {
         return null
     }
