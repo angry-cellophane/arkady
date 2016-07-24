@@ -1,19 +1,21 @@
 package org.ka.arkady.aggregator
 
 import org.ka.arkady.Food
-import org.ka.arkady.spec.TreeFilteringAggregatorSpecification
 
 
 class FilteringAggregator implements Aggregator {
 
-    final Closure filter
-
-    FilteringAggregator(Closure filter) {
-        this.filter = filter
-    }
+    final List<Case> cases = []
 
     @Override
     void aggregate(Food food) {
-        filter(food)
+        for (Case c: cases) {
+            if (c.condition(food)) {
+                c.aggregator.aggregate(food)
+                return
+            }
+        }
+
+        throw new RuntimeException("No aggregator found for ${food}")
     }
 }

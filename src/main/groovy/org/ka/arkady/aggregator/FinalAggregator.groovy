@@ -1,15 +1,17 @@
 package org.ka.arkady.aggregator
 
-class FinalAggregator<T> implements Aggregator<T> {
+import org.ka.arkady.Food
+
+class FinalAggregator implements Aggregator {
     final String name
-    final List<T> objects
+    final List<Food> objects
 
     FinalAggregator(String name) {
         this.name = name
         this.objects = []
     }
 
-    void aggregate(T object) {
-        objects << object
+    void aggregate(Food food) {
+        objects << food
     }
 }
