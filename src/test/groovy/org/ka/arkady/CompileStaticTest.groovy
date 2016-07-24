@@ -21,7 +21,7 @@ class CompileStaticTest {
         def treeFilter = builder.newTree {
             match { it.foodType } {
                 when('vegetables').aggregateBy(newAggregator([name: 'vegetablesAgg'] as Map<String,Object>))
-                when('fruits').then {
+                when('fruits') then {
                     when { it.name == 'apple' } aggregateBy newAggregator([name: 'appleAgg'] as Map<String,Object>)
                     when { it.name == 'orange' } aggregateBy newAggregator([name: 'orangeAgg'] as Map<String,Object>)
                     when { it.name == 'pineapple' } aggregateBy findByName('appleAgg')
