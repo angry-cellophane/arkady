@@ -13,7 +13,7 @@ class FilterTreeBuilderTest extends Specification {
         def builder = new TreeFilteringAggregatorBuilder<Food>()
 
         def potatoAggregator = builder.newFilter {
-            when { !(it.country in ['BG', 'PL', 'DE']) } aggergator fails
+            when { !(it.country in ['BG', 'PL', 'DE']) } aggregator fails
             when { it.manufacturer == 'man1' } newAggregator(name: 'potatoMan1Agg')
             when { it.manufacturer == 'man2' } newAggregator(name: 'potatoMan2Agg')
         }
@@ -24,7 +24,7 @@ class FilterTreeBuilderTest extends Specification {
                     when 'vegetables' then {
                         match { it.foodType } {
                             when 'carrot' newAggregator(name: 'carrotAgg')
-                            when 'potato' aggergator potatoAggregator
+                            when 'potato' aggregator potatoAggregator
                         }
                     }
                     when 'fruits' then {

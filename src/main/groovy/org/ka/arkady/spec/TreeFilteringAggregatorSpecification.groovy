@@ -24,7 +24,7 @@ class TreeFilteringAggregatorSpecification implements BaseSpec, MatchBodySpec, A
     }
 
     @Override
-    Aggregator aggergator(Aggregator aggregator) {
+    Aggregator aggregator(Aggregator aggregator) {
         return null
     }
 
