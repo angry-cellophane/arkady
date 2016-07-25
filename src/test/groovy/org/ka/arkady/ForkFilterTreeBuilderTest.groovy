@@ -6,35 +6,28 @@ import spock.lang.Specification
 import java.util.concurrent.TimeUnit
 
 
-class FilterTreeBuilderTest extends Specification {
+class ForkFilterTreeBuilderTest extends Specification {
 
     TreeFilteringAggregator testTree() {
         def builder = new TreeFilteringAggregatorBuilder()
 
-        def potatoAggregator = builder.newFilter {
-            when { !(it.country in ['BG', 'PL', 'DE']) } aggregateBy fails
-            when { it.manufacturer == 'man1' } aggregateBy newAggregator('potatoMan1Agg')
-            when { it.manufacturer == 'man2' } aggregateBy newAggregator('potatoMan2Agg')
-            when all aggregateBy newAggregator('otherPotatoAgg')
-        }
-
         builder.newTree {
             when { System.currentTimeMillis() - it.expireDate < TimeUnit.DAYS.toMillis(5) } then {
                 match { it.foodClass } {
-                    when 'vegetables' then {
-                        match { it.foodType } {
-                            when 'carrot' aggregateBy newAggregator('carrotAgg')
-                            when 'potato' aggregateBy potatoAggregator
-//                            by default all other food go to the fails aggregator
-                        }
-                    }
                     when 'fruits' then {
                         match { it.foodType } {
-                            when('apple') then {
-                                when { it.name in ['Red Apple', 'Green Apple'] } aggregateBy newAggregator('goodFruitsAgg')
+                            when('apple') forks {
+                                fork {
+                                    when { it.name in ['Red Apple', 'Green Apple'] } aggregateBy newAggregator('goodFruitsAgg1')
+                                    when { it.country == 'PL' } aggregateBy findByName('goodFruitsAgg1')
+                                }
+                                fork {
+                                    when { it.name == 'Red Apple' } aggregateBy newAggregator('goodFruitsAgg2')
+                                    when { it.country == 'DE' } aggregateBy findByName('goodFruitsAgg2')
+                                }
                             }
-                            when('orange') aggregateBy findByName('goodFruitsAgg')
-                            when('grapes') aggregateBy newAggregator('grapesAgg')
+                            when('orange') aggregateBy newAggregator('otherAgg')
+                            when('grapes') aggregateBy findByName('otherAgg')
                         }
                     }
                 }
@@ -48,7 +41,7 @@ class FilterTreeBuilderTest extends Specification {
         when:
         def aggregators = tree.aggregators
         then:
-        aggregators.size() == 7
+        aggregators.size() == 4
     }
 
     def 'test fitlers'() {
@@ -87,9 +80,9 @@ class FilterTreeBuilderTest extends Specification {
         when:
         food.each tree.&aggregate
         then:
-        aggregators.find { it.name == 'goodFruitsAgg' }.objects.size() == 2
-        aggregators.find { it.name == 'potatoMan1Agg' }.objects.size() == 1
-        aggregators.find { it.name == 'fails' }.objects.size() == 1
+        aggregators.find { it.name == 'goodFruitsAgg1' }.objects.size() == 1
+        aggregators.find { it.name == 'goodFruitsAgg2' }.objects.size() == 1
+        aggregators.find { it.name == 'goodFruitsAgg1' }.objects == aggregators.find { it.name == 'goodFruitsAgg2' }.objects
     }
 
 }

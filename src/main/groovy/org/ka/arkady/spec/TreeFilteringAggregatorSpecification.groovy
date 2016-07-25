@@ -5,12 +5,14 @@ import groovy.transform.stc.ClosureParams
 import groovy.transform.stc.SimpleType
 import org.ka.arkady.aggregator.Aggregator
 import org.ka.arkady.aggregator.Case
+import org.ka.arkady.aggregator.ExecuteAllFilteringAggregator
+import org.ka.arkady.aggregator.ExecuteFirstFilteringAggregator
 import org.ka.arkady.aggregator.FilteringAggregator
 import org.ka.arkady.aggregator.FinalAggregator
 import org.ka.arkady.utils.ClosureUtils
 
 @CompileStatic
-class TreeFilteringAggregatorSpecification implements BaseSpec, MatchBodySpec, AfterWhenSpec {
+class TreeFilteringAggregatorSpecification implements BaseSpec, MatchBodySpec, AfterWhenSpec, ForkSpec {
 
     final List<FilteringAggregator> stack
     final Case failsCase
@@ -26,8 +28,7 @@ class TreeFilteringAggregatorSpecification implements BaseSpec, MatchBodySpec, A
     }
 
     @Override
-    Aggregator newAggregator(Map<String, Object> params) {
-        def name = params['name'].toString()
+    Aggregator newAggregator(String name) {
         if (name in aggregatorByName) throw new RuntimeException("Aggregator ${name} already exists")
 
         def agg = new FinalAggregator(name)
@@ -52,10 +53,20 @@ class TreeFilteringAggregatorSpecification implements BaseSpec, MatchBodySpec, A
     @Override
     BaseSpec then(@DelegatesTo(value = BaseSpec, strategy = Closure.DELEGATE_FIRST) Closure body) {
         Closure c = adjustDelegate(body)
-        stack << new FilteringAggregator()
+        stack << new ExecuteFirstFilteringAggregator()
         c()
         def agg = stack.pop()
         agg.cases << failsCase
+        stack.last().cases.last().aggregator = agg
+        return this
+    }
+
+    @Override
+    BaseSpec forks(@DelegatesTo(value = ForkSpec, strategy = Closure.DELEGATE_FIRST) Closure body) {
+        Closure c = adjustDelegate(body)
+        stack << new ExecuteAllFilteringAggregator()
+        c()
+        def agg = stack.pop()
         stack.last().cases.last().aggregator = agg
         return this
     }
@@ -67,7 +78,7 @@ class TreeFilteringAggregatorSpecification implements BaseSpec, MatchBodySpec, A
 
     @Override
     AfterWhenSpec when(@ClosureParams(value = SimpleType, options = 'org.ka.arkady.Food') Closure<Boolean> condition) {
-        stack.last().cases << new Case(condition: condition)
+        stack.last().cases << new Case(condition, null)
         return this
     }
 
@@ -79,14 +90,13 @@ class TreeFilteringAggregatorSpecification implements BaseSpec, MatchBodySpec, A
     @Override
     AfterWhenSpec when(Object assertion) {
         def c = matchConditionsStack.last()
-        stack.last().cases << new Case(condition: { c(it) == assertion })
+        stack.last().cases << new Case({ c(it) == assertion }, null)
         return this
     }
 
     @Override
-    BaseSpec match(
-            @ClosureParams(value = SimpleType, options = 'org.ka.arkady.Food') Closure condition,
-            @DelegatesTo(value = MatchBodySpec, strategy = Closure.DELEGATE_FIRST) Closure body) {
+    BaseSpec match(@ClosureParams(value = SimpleType, options = 'org.ka.arkady.Food') Closure condition,
+                   @DelegatesTo(value = MatchBodySpec, strategy = Closure.DELEGATE_FIRST) Closure body) {
 
         def c = adjustDelegate(body)
         matchConditionsStack.push(condition.memoizeAtMost(1))
@@ -100,5 +110,16 @@ class TreeFilteringAggregatorSpecification implements BaseSpec, MatchBodySpec, A
         c.setDelegate(this)
         c.setResolveStrategy(Closure.DELEGATE_FIRST)
         c
+    }
+
+    @Override
+    BaseSpec fork(@DelegatesTo(value = BaseSpec, strategy = Closure.DELEGATE_FIRST) Closure body) {
+        Closure c = adjustDelegate(body)
+        stack << new ExecuteFirstFilteringAggregator()
+        c()
+        def agg = stack.pop()
+        agg.cases << failsCase
+        stack.last().cases << new Case(ClosureUtils.TRUE, agg)
+        return this
     }
 }

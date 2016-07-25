@@ -1,9 +1,14 @@
 package org.ka.arkady.aggregator
 
-import groovy.transform.stc.ClosureParams
-import groovy.transform.stc.SimpleType
+import groovy.transform.CompileStatic
 
+@CompileStatic
 class Case {
     Closure<Boolean> condition
     Aggregator aggregator
+
+    Case(Closure<Boolean> condition,Aggregator aggregator) {
+        this.condition = condition
+        this.aggregator = aggregator
+    }
 }

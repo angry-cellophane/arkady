@@ -6,6 +6,6 @@ import org.ka.arkady.aggregator.Aggregator
 
 interface MatchBodySpec {
     AfterWhenSpec when(Object assertion)
-    Aggregator newAggregator(Map<String, Object> params)
+    Aggregator newAggregator(String name)
     Aggregator findByName(String aggregatorName)
 }

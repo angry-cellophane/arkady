@@ -1,21 +1,8 @@
 package org.ka.arkady.aggregator
 
-import org.ka.arkady.Food
 
+interface FilteringAggregator extends Aggregator {
 
-class FilteringAggregator implements Aggregator {
+    List<Case> getCases()
 
-    final List<Case> cases = []
-
-    @Override
-    void aggregate(Food food) {
-        for (Case c: cases) {
-            if (c.condition(food)) {
-                c.aggregator.aggregate(food)
-                return
-            }
-        }
-
-        throw new RuntimeException("No aggregator found for ${food}")
-    }
 }
