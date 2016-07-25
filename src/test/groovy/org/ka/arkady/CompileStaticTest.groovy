@@ -21,10 +21,17 @@ class CompileStaticTest {
         def treeFilter = builder.newTree {
             match { it.foodType } {
                 when('vegetables').aggregateBy(newAggregator('vegetablesAgg'))
-                when('fruits') then {
-                    when { it.name == 'apple' } aggregateBy newAggregator('appleAgg')
+                when 'fruits' then {
+                    when { it.name == 'apple' } forks {
+                        fork {
+                            when all aggregateBy newAggregator('appleAgg1')
+                        }
+                        fork {
+                            when all aggregateBy newAggregator('appleAgg2')
+                        }
+                    }
                     when { it.name == 'orange' } aggregateBy newAggregator('orangeAgg')
-                    when { it.name == 'pineapple' } aggregateBy findByName('appleAgg')
+                    when { it.name == 'pineapple' } aggregateBy findByName('appleAgg1')
                 }
             }
         }
@@ -35,7 +42,8 @@ class CompileStaticTest {
         }
 
         Assert.assertEquals(1, aggregators.find { it.name == 'vegetablesAgg' }.objects.size())
-        Assert.assertEquals(2, aggregators.find { it.name == 'appleAgg' }.objects.size())
+        Assert.assertEquals(2, aggregators.find { it.name == 'appleAgg1' }.objects.size())
+        Assert.assertEquals(1, aggregators.find { it.name == 'appleAgg2' }.objects.size())
         Assert.assertEquals(1, aggregators.find { it.name == 'orangeAgg' }.objects.size())
         Assert.assertEquals(1, aggregators.find { it.name == 'fails' }.objects.size())
     }
