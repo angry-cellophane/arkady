@@ -7,27 +7,8 @@ import org.ka.arkady.Food;
 @CompileStatic
 public class ClosureUtils {
 
-    public static final Closure<Boolean> TRUE = new Closure<Boolean>(null, null) {
-        public Boolean doCall(Object it) {
-            return true;
-        }
-
-        public Boolean doCall() {
-            return doCall(null);
-        }
-
-    };
-
-    public static final Closure<Boolean> FALSE = new Closure<Boolean>(null, null) {
-        public Boolean doCall(Object it) {
-            return false;
-        }
-
-        public Boolean doCall() {
-            return doCall(null);
-        }
-
-    };
+    public static final Closure<Boolean> TRUE = new ConstantClosure<Boolean>(null, null, Boolean.TRUE);
+    public static final Closure<Boolean> FALSE = new ConstantClosure<Boolean>(null, null, Boolean.FALSE);
 
     public static final Closure<Food> DEFAULT_COPIER = new Closure<Food>(null, null) {
         public Food doCall(Food f) {
