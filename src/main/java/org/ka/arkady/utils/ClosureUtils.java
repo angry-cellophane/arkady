@@ -16,7 +16,6 @@ public class ClosureUtils {
             copy(f, food);
             return food;
         }
-
     };
 
     private static void copy(Food from, Food to) {
