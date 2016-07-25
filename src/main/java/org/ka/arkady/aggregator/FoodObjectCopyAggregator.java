@@ -7,8 +7,8 @@ import java.util.List;
 
 public class FoodObjectCopyAggregator implements FilteringAggregator {
 
-    final FilteringAggregator delegate;
-    final Closure<Food> copyFunction;
+    private final FilteringAggregator delegate;
+    private final Closure<Food> copyFunction;
 
     public FoodObjectCopyAggregator(FilteringAggregator delegate, Closure<Food> copyFunction) {
         this.delegate = delegate;
