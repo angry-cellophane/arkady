@@ -21,7 +21,6 @@ public class ExecuteAllFilteringAggregator implements FilteringAggregator {
 
         }
 
-
         if (!isFound) throw new RuntimeException("No aggregator found for " + String.valueOf(food));
     }
 
