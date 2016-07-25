@@ -79,10 +79,16 @@ class ForkFilterTreeBuilderTest extends Specification {
 
         when:
         food.each tree.&aggregate
+
+        and:
+        def objects1 = aggregators.find { it.name == 'goodFruitsAgg1' }.objects
+        def objects2 = aggregators.find { it.name == 'goodFruitsAgg2' }.objects
+
         then:
-        aggregators.find { it.name == 'goodFruitsAgg1' }.objects.size() == 1
-        aggregators.find { it.name == 'goodFruitsAgg2' }.objects.size() == 1
-        aggregators.find { it.name == 'goodFruitsAgg1' }.objects == aggregators.find { it.name == 'goodFruitsAgg2' }.objects
+        objects1.size() == 1
+        objects2.size() == 1
+        objects1[0] != objects2[0]
+        objects1[0].properties == objects2[0].properties
     }
 
 }

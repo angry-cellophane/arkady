@@ -3,12 +3,14 @@ package org.ka.arkady.spec
 import groovy.transform.CompileStatic
 import groovy.transform.stc.ClosureParams
 import groovy.transform.stc.SimpleType
+import org.ka.arkady.Food
 import org.ka.arkady.aggregator.Aggregator
 import org.ka.arkady.aggregator.Case
 import org.ka.arkady.aggregator.ExecuteAllFilteringAggregator
 import org.ka.arkady.aggregator.ExecuteFirstFilteringAggregator
 import org.ka.arkady.aggregator.FilteringAggregator
 import org.ka.arkady.aggregator.FinalAggregator
+import org.ka.arkady.aggregator.FoodObjectCopyAggregator
 import org.ka.arkady.utils.ClosureUtils
 
 @CompileStatic
@@ -16,15 +18,17 @@ class TreeFilteringAggregatorSpecification implements BaseSpec, MatchBodySpec, A
 
     final List<FilteringAggregator> stack
     final Case failsCase
-    final Map<String, Aggregator> aggregatorByName
+    final Map<String, FinalAggregator> aggregatorByName
+    final Closure<Food> foodCopier;
 
     private final List<Closure> matchConditionsStack
 
-    TreeFilteringAggregatorSpecification(Case failsCase, FilteringAggregator rootAgg, Map<String, Aggregator> aggregatorByName) {
+    TreeFilteringAggregatorSpecification(Case failsCase, FilteringAggregator rootAgg, Map<String, FinalAggregator> aggregatorByName, Closure<Food> foodCopier) {
         this.failsCase = failsCase
         this.stack = [rootAgg]
         this.aggregatorByName = aggregatorByName
         this.matchConditionsStack = []
+        this.foodCopier = foodCopier
     }
 
     @Override
@@ -115,7 +119,7 @@ class TreeFilteringAggregatorSpecification implements BaseSpec, MatchBodySpec, A
     @Override
     BaseSpec fork(@DelegatesTo(value = BaseSpec, strategy = Closure.DELEGATE_FIRST) Closure body) {
         Closure c = adjustDelegate(body)
-        stack << new ExecuteFirstFilteringAggregator()
+        stack << new FoodObjectCopyAggregator(new ExecuteFirstFilteringAggregator(), foodCopier)
         c()
         def agg = stack.pop()
         agg.cases << failsCase
