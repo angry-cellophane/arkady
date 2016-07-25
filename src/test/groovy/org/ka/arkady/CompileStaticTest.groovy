@@ -4,6 +4,9 @@ import groovy.transform.CompileStatic
 import org.junit.Assert
 import org.junit.Test
 
+/**
+ * i7-4510U, 4 cores, win 10, hot spot jvm 1.8.0_91 ~ 60ms
+ */
 @CompileStatic
 class CompileStaticTest {
 
