@@ -1,6 +1,5 @@
 package org.ka.arkady.aggregator;
 
-import org.codehaus.groovy.runtime.DefaultGroovyMethods;
 import org.ka.arkady.Food;
 
 import java.util.ArrayList;
