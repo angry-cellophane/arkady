@@ -96,7 +96,7 @@ public class TreeFilteringAggregatorSpecification implements BaseSpec, MatchBody
     }
 
     @Override
-    public BaseSpec forks(@DelegatesTo(value = ForkSpec.class, strategy = Closure.DELEGATE_FIRST) Closure body) {
+    public ForkSpec forks(@DelegatesTo(value = ForkSpec.class, strategy = Closure.DELEGATE_FIRST) Closure body) {
         Closure c = adjustDelegate(body);
         stack.add(new ExecuteAllFilteringAggregator());
 
